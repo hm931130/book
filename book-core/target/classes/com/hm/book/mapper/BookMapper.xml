@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hm.book.mapper.BookMapper">
+
+    <insert id="addBooks">
+        insert into book(category_id,name,level,price,img_path,create_time,update_time) values
+        <foreach collection="books" item="book" separator=",">
+            (#{book.categoryId},#{book.name},#{book.level},#{book.price},#{book.imgPath},#{book.createTime},#{book.updateTime})
+        </foreach>
+    </insert>
+</mapper>
