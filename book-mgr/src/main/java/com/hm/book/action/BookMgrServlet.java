@@ -33,182 +33,199 @@ import java.util.UUID;
  */
 @WebServlet("/back")
 public class BookMgrServlet extends HttpServlet {
- private HttpServletRequest request;
- private HttpServletResponse response;
+    private HttpServletRequest request;
+    private HttpServletResponse response;
 
- private CategoryService categoryService;
- private BookService bookService;
+    private CategoryService categoryService;
+    private BookService bookService;
 
- @Override
- public void init() throws ServletException {
-  super.init();
-  // 获取sping的容器。
-  ServletContext servletContext = this.getServletContext();
-  WebApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(servletContext);
-  categoryService = (CategoryService) context.getBean("categoryService");
-  bookService = (BookService) context.getBean("bookService");
- }
-
- @Override
- protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-//  super.service(req, resp);
-  this.request = req;
-  this.response = resp;
-  String method = request.getParameter("method");
-  switch (method) {
-   case "getIndex":
-    displayIndex();
-    break;
-   case "toAddCategory":
-    toAddCategory();
-    break;
-   case "addCategory":
-    addCategory();
-    break;
-   case "toAddBook":
-    toAddBook();
-    break;
-   case "addBook":
-    addBook();
-    break;
-   case "toBookList":
-    toBookList();
-    break;
-  }
- }
-
- private void toBookList() {
-//  List<Book> books = bookService.findBooksByCid();
-
- }
-
- /**
-  * 添加图书
-  */
- private void addBook() {
-
-  if (ServletFileUpload.isMultipartContent(request)) {
-   try {
-    DiskFileItemFactory factory = new DiskFileItemFactory();
-    ServletFileUpload fileUpload = new ServletFileUpload(factory);
-    List<FileItem> itemList = fileUpload.parseRequest(request);
-
-    int index = 0;
-    String url = "";
-    List<Book> books = new ArrayList<>();
-    Book book = new Book();
-    for (FileItem fileItem : itemList) {
-     if (index != 0 && index % 5 == 0) {
-      book.setCreateTime(new Date());
-      book.setUpdateTime(new Date());
-      books.add(book);
-     }
-     index++;
-     //普通表单项
-     if (fileItem.isFormField()) {
-      String fieldName = fileItem.getFieldName();
-      if ("categoryId".equals(fieldName)) {
-       book.setCategoryId(Long.valueOf(fileItem.getString()));
-      } else if ("name".equals(fieldName)) {
-       book.setName(fileItem.getString());
-      } else if ("level".equals(fieldName)) {
-       book.setLevel(Integer.valueOf(fileItem.getString()));
-      } else if ("price".equals(fieldName)) {
-       book.setPrice(Integer.valueOf(fileItem.getString()));
-      }
-     } else {
-      //文件上传项
-      String itemName = fileItem.getName();
-      if (itemName != null && !itemName.equals("")) {
-       String sysPath = request.getSession().getServletContext().getRealPath("/resources/img");
-       // 定义一个新的图片名称
-       String fileName = UUID.randomUUID().toString();
-       //  提取图片的类型
-       // 获取上传文件的后缀名
-       String suffix = itemName.substring(itemName.lastIndexOf("."));
-       fileName += suffix;
-       url = fileName;
-       fileItem.write(new File(sysPath + "/" + fileName));
-      }
-     }
-     book.setImgPath(url);
+    @Override
+    public void init() throws ServletException {
+        super.init();
+        // 获取sping的容器。
+        ServletContext servletContext = this.getServletContext();
+        WebApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(servletContext);
+        categoryService = (CategoryService) context.getBean("categoryService");
+        bookService = (BookService) context.getBean("bookService");
     }
-    books.add(book);
-    bookService.addBooks(books);
-    request.setAttribute("tip", "图书增加成功");
-    displayIndex();
-   } catch (Exception e) {
-    e.printStackTrace();
-   }
-  }
- }
 
- /**
-  * 去添加图书界面
-  */
- private void toAddBook() throws ServletException, IOException {
-  List<Category> categories = categoryService.findAllCategores();
-  request.setAttribute("categories", categories);
-  request.getRequestDispatcher("/WEB-INF/jsp/add_book.jsp").forward(request, response);
+    @Override
+    protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+//  super.service(req, resp);
+        this.request = req;
+        this.response = resp;
+        this.request.setCharacterEncoding("UTF-8");
+        this.response.setCharacterEncoding("UTF-8");
+        String method = request.getParameter("method");
+        switch (method) {
+            case "getIndex":
+                displayIndex();
+                break;
+            case "toAddCategory":
+                toAddCategory();
+                break;
+            case "addCategory":
+                addCategory();
+                break;
+            case "toAddBook":
+                toAddBook();
+                break;
+            case "addBook":
+                addBook();
+                break;
+            case "toBookList":
+                toBookList();
+                break;
+        }
+    }
 
- }
+    private void toBookList() throws ServletException, IOException {
+        String cid = request.getParameter("cid");
+        List<Book> books = bookService.findAllBooks(cid);
+        List<Category> categories = categoryService.findAllCategores();
+        request.setAttribute("categories", categories);
+        request.setAttribute("cid", cid);
+        request.setAttribute("books", books);
+        request.getRequestDispatcher("/WEB-INF/jsp/book_list.jsp").forward(request, response);
 
- /**
-  * 预览增加分类
-  */
- private void toAddCategory() throws ServletException, IOException {
-  request.getRequestDispatcher("/WEB-INF/jsp/add_category.jsp").forward(request, response);
- }
+    }
 
- /**
-  * 添加图书分类
-  */
- private void addCategory() throws ServletException, IOException {
+    /**
+     * 添加图书
+     */
+    private void addBook() {
 
-  String name = request.getParameter("name");
-  if (StringUtils.isEmpty(name)) {
-   request.setAttribute("tip", "请输入名称");
-   toAddCategory();
-   return;
-  }
-  Category category = new Category();
-  category.setName(name);
-  categoryService.addCategory(category);
-  request.setAttribute("tip", "图书分类添加成功");
-  displayIndex();
- }
+        if (ServletFileUpload.isMultipartContent(request)) {
+            try {
+                DiskFileItemFactory factory = new DiskFileItemFactory();
+                ServletFileUpload fileUpload = new ServletFileUpload(factory);
+                List<FileItem> itemList = fileUpload.parseRequest(request);
 
- /**
-  * 展示主页
-  */
- private void displayIndex() throws ServletException, IOException {
-  List<Category> categories = categoryService.findAllCategores();
-  request.setAttribute("categories", categories);
-  request.getRequestDispatcher("/WEB-INF/jsp/index.jsp").forward(request, response);
- }
+                String url = "";
+                String cidtmp = "";
+                List<Book> books = new ArrayList<>();
+                Book book = null;
+                for (FileItem fileItem : itemList) {
 
- private String getSmallPicPath(Part part) {
-  try {
-   // 如果用户上传了这里代码是不会出现异常 了
-   // 如果没有上传这里出现异常
+                    //普通表单项
+                    if (fileItem.isFormField()) {
+                        String fieldName = fileItem.getFieldName();
+                        //隐藏域 重置book对象
+                        if ("cid".equals(fieldName)) {
+                            cidtmp = fileItem.getString();
+                            book = new Book();
+                        }
+
+                        if ("categoryId".equals(fieldName)) {
+                            String categoryId = fileItem.getString();
+                            Category category = categoryService.findCategoryById(categoryId);
+                            book.setCategory(category);
+                        } else if ("name".equals(fieldName)) {
+                            String name = fileItem.getString();
+                            name = new String(name.getBytes("ISO-8859-1"), "utf-8");
+                            book.setName(name);
+                        } else if ("level".equals(fieldName)) {
+                            book.setLevel(Integer.valueOf(fileItem.getString()));
+                        } else if ("price".equals(fieldName)) {
+                            book.setPrice(Integer.valueOf(fileItem.getString()));
+                        }
+                    } else {
+                        //文件上传项
+                        String itemName = fileItem.getName();
+                        if (itemName != null && !itemName.equals("")) {
+                            String sysPath = request.getSession().getServletContext().getRealPath("/resources/img");
+                            // 定义一个新的图片名称
+                            String fileName = UUID.randomUUID().toString();
+                            //  提取图片的类型
+                            // 获取上传文件的后缀名
+                            String suffix = itemName.substring(itemName.lastIndexOf("."));
+                            fileName += suffix;
+                            url = fileName;
+                            fileItem.write(new File(sysPath + "\\" + url));
+                        }
+                        book.setImgPath(url);
+                        book.setCreateTime(new Date());
+                        book.setUpdateTime(new Date());
+                        books.add(book);
+                    }
+                }
+                bookService.addBooks(books);
+                request.setAttribute("tip", "图书增加成功");
+                response.sendRedirect(request.getContextPath() + "/back?method=toBookList&cid=" + cidtmp);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * 去添加图书界面
+     */
+    private void toAddBook() throws ServletException, IOException {
+        List<Category> categories = categoryService.findAllCategores();
+        String cid = request.getParameter("cid");
+        request.setAttribute("categories", categories);
+        request.setAttribute("cid", cid);
+        request.getRequestDispatcher("/WEB-INF/jsp/add_book.jsp").forward(request, response);
+
+    }
+
+    /**
+     * 预览增加分类
+     */
+    private void toAddCategory() throws ServletException, IOException {
+        request.getRequestDispatcher("/WEB-INF/jsp/add_category.jsp").forward(request, response);
+    }
+
+    /**
+     * 添加图书分类
+     */
+    private void addCategory() throws ServletException, IOException {
+
+        String name = request.getParameter("name");
+        if (StringUtils.isEmpty(name)) {
+            request.setAttribute("tip", "请输入名称");
+            toAddCategory();
+            return;
+        }
+        Category category = new Category();
+        category.setName(name);
+        categoryService.addCategory(category);
+        request.setAttribute("tip", "图书分类添加成功");
+        displayIndex();
+    }
+
+    /**
+     * 展示主页
+     */
+    private void displayIndex() throws ServletException, IOException {
+        List<Category> categories = categoryService.findAllCategores();
+        request.setAttribute("categories", categories);
+        request.getRequestDispatcher("/WEB-INF/jsp/index.jsp").forward(request, response);
+    }
+
+    private String getSmallPicPath(Part part) {
+        try {
+            // 如果用户上传了这里代码是不会出现异常 了
+            // 如果没有上传这里出现异常
 //   Part part = request.getPart("smallImg");
-   // 保存到项目的路径中去
-   String sysPath = request.getSession().getServletContext().getRealPath("/resources/img");
-   // 定义一个新的图片名称
-   String fileName = UUID.randomUUID().toString();
-   //  提取图片的类型
-   // 上传文件的内容性质
-   String contentDispostion = part.getHeader("content-disposition");
-   // 获取上传文件的后缀名
-   String suffix = contentDispostion.substring(contentDispostion.lastIndexOf("."), contentDispostion.length() - 1);
-   fileName += suffix;
-   // 把图片保存到路径中去
-   part.write(sysPath + "/" + fileName);
-   return fileName;
-  } catch (Exception e) {
-   e.printStackTrace();
-   return null;
-  }
- }
+            // 保存到项目的路径中去
+            String sysPath = request.getSession().getServletContext().getRealPath("/resources/img");
+            // 定义一个新的图片名称
+            String fileName = UUID.randomUUID().toString();
+            //  提取图片的类型
+            // 上传文件的内容性质
+            String contentDispostion = part.getHeader("content-disposition");
+            // 获取上传文件的后缀名
+            String suffix = contentDispostion.substring(contentDispostion.lastIndexOf("."), contentDispostion.length() - 1);
+            fileName += suffix;
+            // 把图片保存到路径中去
+            part.write(sysPath + "/" + fileName);
+            return fileName;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
 }

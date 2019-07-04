@@ -23,7 +23,7 @@
 
         <c:forEach items="${requestScope.categories}" var="category">
             <nav>
-                <a href="<c:url value="/back?method=toAddBook" />">${category.name}</a>
+                <a href="<c:url value="/back?method=toBookList&cid=${category.id}" />">${category.name}</a>
             </nav>
         </c:forEach>
         <nav>

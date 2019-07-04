@@ -6,5 +6,8 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 public interface BookMapper {
- void addBooks(@Param("books") List<Book> books);
+    void addBooks(@Param("books") List<Book> books);
+
+
+    List<Book> findAllBooks(@Param("cid") String cid);
 }

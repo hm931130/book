@@ -12,6 +12,8 @@ import java.util.List;
  */
 public interface BookService {
 
- void addBooks(List<Book> books);
+    void addBooks(List<Book> books);
 
+
+    List<Book> findAllBooks(String cid);
 }

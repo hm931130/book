@@ -15,4 +15,6 @@ public interface CategoryService {
  List<Category> findAllCategores();
 
  void addCategory(Category category);
+
+    Category findCategoryById(String categoryId);
 }

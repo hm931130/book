@@ -97,6 +97,13 @@
             <version>1.4</version>
         </dependency>
 
+        <!--pageHelper分页插件 -->
+        <dependency>
+            <groupId>com.github.pagehelper</groupId>
+            <artifactId>pagehelper</artifactId>
+            <version>5.0.0</version>
+        </dependency>
+
     </dependencies>
 
     <build>

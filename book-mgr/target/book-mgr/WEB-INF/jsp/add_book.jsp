@@ -33,7 +33,11 @@
     </div>
     <form class="form-horizontal" action="${pageContext.request.contextPath}/back?method=addBook" method="post"
           enctype="multipart/form-data">
+
+        <!-- 保留分类id -->
+
         <div id="content">
+            <input type="hidden" name="cid" value="${cid}"/>
             <div class="form-group">
                 <label for="name" class="col-sm-2 control-label">名称 ：</label>
                 <div class="col-sm-8">
@@ -45,13 +49,21 @@
                 <select name="categoryId" class="col-sm-2 form-control" style="width: auto">
                     <!-- 此处数据需要从数据库中读取 -->
                     <c:forEach items="${requestScope.categories}" var="category">
-                        <option id="${category.id}" value="${category.id}">${category.name}</option>
+
+                        <c:if test="${cid==category.id}">
+                            <option id="${category.id}" value="${category.id}"
+                                    selected="selected">${category.name}</option>
+                        </c:if>
+
+                        <c:if test="${cid!=category.id}">
+                            <option id="${category.id}" value="${category.id}">${category.name}</option>
+                        </c:if>
                     </c:forEach>
                 </select>
             </div>
             <div class="form-group">
                 <label class="col-sm-2 control-label">星级 ：</label>
-                <select name="level" class="col-sm-2 form-control" style="width: auto">
+                <select name="level" id="level" class="col-sm-2 form-control" style="width: auto">
                     <option id="1" value="1">1星</option>
                     <option id="2" value="2">2星</option>
                     <option id="3" value="3">3星</option>
@@ -68,7 +80,7 @@
             <div class="form-group">
                 <label class="col-sm-2 control-label">图片 ：</label>
                 <div class="col-sm-8">
-                    <input name="smallImg" class="file-loading"
+                    <input name="smallImg" id="smallImg" class="file-loading"
                            type="file" multiple accept=".jpg,.jpeg,.png" data-min-file-count="1"
                            data-show-preview="true">
                 </div>
@@ -94,6 +106,7 @@
     function addContent() {
         var html =
             '           <h5 class="page-header"></h5>\n' +
+            '            <input type="hidden" name="cid" value="${cid}"/>\n' +
             '           <div id="_div_"' + index + '>\n' +
             '               <div class="form-group">\n' +
             '                    <label for="name" class="col-sm-2 control-label">名称 ：</label>\n' +
@@ -103,7 +116,7 @@
             '                </div>\n' +
             '                <div class="form-group">\n' +
             '                    <label class="col-sm-2 control-label">分类 ：</label>\n' +
-            '                    <select name="categoryId" class="col-sm-2 form-control" style="width: auto">\n' +
+            '                    <select id= "categoryId" name="categoryId" class="col-sm-2 form-control" style="width: auto">\n' +
             '                        <c:forEach var="item" items="${categories}">\n' +
             '                            <option id="${item.id}" value="${item.id}">${item.name}</option>\n' +
             '                        </c:forEach>\n' +
@@ -111,7 +124,7 @@
             '                </div>\n' +
             '                <div class="form-group">\n' +
             '                    <label class="col-sm-2 control-label">星级 ：</label>\n' +
-            '                    <select name="level" class="col-sm-2 form-control" style="width: auto">\n' +
+            '                    <select name="level" id="level" class="col-sm-2 form-control" style="width: auto">\n' +
             '                        <option id="1" value="1">1星</option>\n' +
             '                        <option id="2" value="2">2星</option>\n' +
             '                        <option id="3" value="3">3星</option>\n' +
@@ -128,7 +141,7 @@
             '                <div class="form-group">\n' +
             '                    <label class="col-sm-2 control-label">图片 ：</label>\n' +
             '                    <div class="col-sm-8">\n' +
-            '                        <input name="smallImg" class="file-loading"\n' +
+            '                        <input name="smallImg" id="smallImg" class="file-loading"\n' +
             '                               type="file" multiple accept=".jpg,.jpeg,.png" data-min-file-count="1"\n' +
             '                               data-show-preview="true">\n' +
             '                    </div>\n' +

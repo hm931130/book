@@ -23,7 +23,7 @@
 
         <c:forEach items="${requestScope.categories}" var="category">
             <nav>
-                <a href="<c:url value="/back?method=toAddBook" />">${category.name}</a>
+                <a href="<c:url value="/back?method=toBookList&cid=${category.id}" />">${category.name}</a>
             </nav>
         </c:forEach>
         <nav>
@@ -36,7 +36,7 @@
     <div class="container">
         <div>
             <h1>图书</h1> <span style="color: red;">${tip}</span>
-            <p>图书分类列表</p>
+            <p>图书列表</p>
         </div>
     </div>
 </section>
@@ -46,16 +46,20 @@
             <thead>
             <tr>
                 <th>名称</th>
+                <th>分类</th>
+                <th>路径</th>
                 <th>创建时间</th>
                 <th>最后修改时间</th>
             </tr>
             </thead>
             <tbody>
-            <c:forEach items="${requestScope.categories}" var="category">
+            <c:forEach items="${requestScope.books}" var="book">
                 <tr>
-                    <td>${category.name}</td>
-                    <td><fmt:formatDate value="${category.createTime}" pattern="yyyy-MM-dd hh:mm"/></td>
-                    <td><fmt:formatDate value="${category.updateTime}" pattern="yyyy-MM-dd hh:mm"/></td>
+                    <td>${book.name}</td>
+                    <td>${book.category.name}</td>
+                    <td>${book.imgPath}</td>
+                    <td><fmt:formatDate value="${book.createTime}" pattern="yyyy-MM-dd hh:mm"/></td>
+                    <td><fmt:formatDate value="${book.updateTime}" pattern="yyyy-MM-dd hh:mm"/></td>
                 </tr>
             </c:forEach>
             </tbody>
@@ -65,7 +69,7 @@
 <section class="page">
     <div class="container">
         <div id="fatie">
-            <a href="<c:url value="/back?method=toAddCategory" />">
+            <a href="<c:url value="/back?method=toAddBook&cid=${cid}" />">
                 <button>新建</button>
             </a>
         </div>

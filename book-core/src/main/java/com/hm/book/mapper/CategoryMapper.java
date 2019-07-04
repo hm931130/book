@@ -9,9 +9,13 @@ import java.util.List;
 public interface CategoryMapper {
 
 
- @Select("select * from category")
- @ResultMap("BaseCategoryResultMap")
- List<Category> findAllCategores();
+    @Select("select * from category")
+    @ResultMap("BaseCategoryResultMap")
+    List<Category> findAllCategores();
 
- void addCategory(Category category);
+    void addCategory(Category category);
+
+    @Select("select * from category where id=#{xx}")
+    @ResultMap("BaseCategoryResultMap")
+    Category findCategoryById(String categoryId);
 }

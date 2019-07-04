@@ -17,10 +17,15 @@ import java.util.List;
 @Service("bookService")
 public class BookServiceImpl implements BookService {
 
- @Autowired
- private BookMapper bookMapper;
+    @Autowired
+    private BookMapper bookMapper;
 
- public void addBooks(List<Book> books) {
-  bookMapper.addBooks(books);
- }
+    public void addBooks(List<Book> books) {
+        bookMapper.addBooks(books);
+    }
+
+
+    public List<Book> findAllBooks(String cid) {
+        return bookMapper.findAllBooks(cid);
+    }
 }

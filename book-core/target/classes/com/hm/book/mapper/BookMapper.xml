@@ -2,10 +2,31 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.hm.book.mapper.BookMapper">
 
+
+    <resultMap id="BookBaseResultMap" type="Book">
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="imgPath" column="img_path"/>
+        <association property="category" column="category_id" javaType="Category"
+                     select="com.hm.book.mapper.CategoryMapper.findCategoryById"/>
+    </resultMap>
+
     <insert id="addBooks">
         insert into book(category_id,name,level,price,img_path,create_time,update_time) values
         <foreach collection="books" item="book" separator=",">
-            (#{book.categoryId},#{book.name},#{book.level},#{book.price},#{book.imgPath},#{book.createTime},#{book.updateTime})
+            (#{book.category.id},#{book.name},#{book.level},#{book.price},#{book.imgPath},#{book.createTime},#{book.updateTime})
         </foreach>
     </insert>
+
+    <select id="findAllBooks" resultMap="BookBaseResultMap" parameterType="String">
+        select * from book
+        <where>
+            <if test="cid!=null &amp;&amp; cid!=''">
+                and category_id=#{cid}
+            </if>
+        </where>
+
+    </select>
+
+
 </mapper>

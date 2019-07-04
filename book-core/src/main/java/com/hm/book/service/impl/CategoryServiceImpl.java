@@ -18,17 +18,21 @@ import java.util.List;
 @Service("categoryService")
 public class CategoryServiceImpl implements CategoryService {
 
- @Autowired
- private CategoryMapper categoryMapper;
+    @Autowired
+    private CategoryMapper categoryMapper;
 
 
- public List<Category> findAllCategores() {
-  return categoryMapper.findAllCategores();
- }
+    public List<Category> findAllCategores() {
+        return categoryMapper.findAllCategores();
+    }
 
- public void addCategory(Category category) {
-  category.setCreateTime(new Date());
-  category.setUpdateTime(new Date());
-  categoryMapper.addCategory(category);
- }
+    public void addCategory(Category category) {
+        category.setCreateTime(new Date());
+        category.setUpdateTime(new Date());
+        categoryMapper.addCategory(category);
+    }
+
+    public Category findCategoryById(String categoryId) {
+        return categoryMapper.findCategoryById(categoryId);
+    }
 }
